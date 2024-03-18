@@ -1,13 +1,10 @@
-//program that ask a user for a number of elements n (max 100) then prompt the user n times
-//to get the n elements and store them in an array:
-//function that takes an array and its size and returns the average of its elements
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 #include <limits.h>
 #include <math.h>
 
+// Function declarations
 int max(int len, int alpha[]);
 int min(int len, int alpha[]);
 double avg(int len, int *alpha);
@@ -20,277 +17,204 @@ int *new_array(int len, int *alpha);
 
 int main(void)
 {
+    // Prompt the user to enter the number of elements, ensuring it's between 1 and 100 📏
     int n;
     do
     {
-        printf("please give me a number beteen 1 and 100: ");
+        printf("Please give me a number between 1 and 100 📏: ");
         scanf("%i", &n);
     }
-    while (n < 0 || n > 100);
+    while (n <= 0 || n > 100);
 
+    // Dynamically allocate memory to store the elements in an array 📦
     int *alpha = malloc(n * sizeof(int));
-
-    for (int i = 0; i < n; i++)
-    {
-        scanf("%i", alpha + i);
+    if (alpha == NULL) {
+        fprintf(stderr, "Memory allocation failed 💥\n");
+        return 1;
     }
 
-
+    // Collect the elements from the user and store them in the array 🔢
+    printf("Enter %d elements 🔢: ", n);
     for (int i = 0; i < n; i++)
     {
-        printf("%i,", alpha[i]);
+        scanf("%i", &alpha[i]);
     }
 
-    int len = n;
+    // Display the elements stored in the array 🖥️
+    printf("Array 🖥️: ");
+    for (int i = 0; i < n; i++)
+    {
+        printf("%i, ", alpha[i]);
+    }
     printf("\n");
 
-    printf("the maximum is: %i\n", max(len, alpha));
-    printf("the minimum is: %i\n", min(len, alpha));
-    printf("the average is: %lf\n", avg(len, alpha));
-    printf("the gap between maximum and minimum is: %i\n", gap(len, alpha));
-    printf("the second maximum is: %i\n", second_maximum(len, alpha));
-    rev(alpha, len);
-    every_second(len, alpha);
-    even_numbers(len, alpha);
-    new_array(len, alpha);
+    // Perform calculations and display the results 📊
+    printf("The maximum is: %i 📈\n", max(n, alpha));
+    printf("The minimum is: %i 📉\n", min(n, alpha));
+    printf("The average is: %.2lf 📊\n", avg(n, alpha));
+    printf("The gap between maximum and minimum is: %i 🔍\n", gap(n, alpha));
+    printf("The second maximum is: %i 🥈\n", second_maximum(n, alpha));
 
+    // Call functions that manipulate the array and display their results 🔄
+    rev(alpha, n);
+    every_second(n, alpha);
+    even_numbers(n, alpha);
+    new_array(n, alpha);
 
+    // Free the allocated memory to prevent memory leaks 🧹
+    free(alpha);
 }
-// function that takes an array and its size and returns the maximum value of its elements.
+
+// Function to find the maximum value in an array 📈
 int max(int len, int alpha[])
 {
-    int maximum = 0;
+    int maximum = INT_MIN;  // Initialize to the smallest possible value to handle all possible int values
     for (int i = 0; i < len; i++)
     {
         if (alpha[i] > maximum)
         {
-            maximum = alpha[i];
+            maximum = alpha[i];  // Update maximum if current element is larger
         }
     }
-
-    return maximum;
+    return maximum;  // Return the maximum value found
 }
-//a function that takes an array and its size and returns the minimum value of its elements
+
+// Function to find the minimum value in an array 📉
 int min(int len, int alpha[])
 {
-    int minimum = alpha[0];
+    if (len == 0) return INT_MAX; // Return the largest possible int value if array is empty
+
+    int minimum = alpha[0];  // Initialize minimum with the first element of the array
     for (int i = 1; i < len; i++)
     {
         if (alpha[i] < minimum)
         {
-            minimum = alpha[i];
+            minimum = alpha[i];  // Update minimum if current element is smaller
         }
     }
-
-    return minimum;
+    return minimum;  // Return the minimum value found
 }
-//average between minimum and maximum
+
+// Function to calculate the average value of an array's elements 📊
 double avg(int len, int *alpha)
 {
     double sum = 0;
     for (int i = 0; i < len; i++)
     {
-        sum = sum + alpha[i];
+        sum += alpha[i];  // Sum all elements
     }
-    double avg_value = sum / len;
-    return avg_value;
+    return len > 0 ? sum / len : 0;  // Return the average or 0 for empty array
 }
 
-//function that takes an array and its size and returns its gap value
-//(the gap is the difference between the max and min)
-
+// Function to calculate the gap (difference between max and min) in an array 🔍
 int gap(int len, int *alpha)
 {
-    return max(len, alpha) - min(len, alpha);
-
+    return max(len, alpha) - min(len, alpha);  // Calculate and return the gap
 }
 
-//function that takes an array and its size and returns the second maximum value of its elements.
-int second_maximum(int len, int *alpha)
-{
-    int maximum2 = INT_MIN;
+// Function to find the second maximum value in an array 🥈
+int second_maximum(int len, int *alpha) {
+    int maximum = max(len, alpha);  // First find the maximum value
+    int maximum2 = INT_MIN;  // Initialize to the smallest possible value
 
-    for (int i = 0; i < len; i++)
-    {
-
-        if (alpha[i] > maximum2 && alpha[i] < max(len, alpha))
-
-        {
-
-            maximum2 = alpha[i];
-
+    for (int i = 0; i < len; i++) {
+        // Check if the current element is greater than maximum2 and not equal to the maximum value
+        if (alpha[i] > maximum2 && alpha[i] < maximum) {
+            maximum2 = alpha[i];  // Update second maximum
         }
     }
 
-    return maximum2;
+    return maximum2;  // Return the second maximum value found
 }
 
-//takes an array and its size and returns a new array as a reverse of the input array
-
-int *rev(int *alpha, int len)
-
-{
-
-    int *reversed = malloc(len * sizeof(int));
-
-    for (int i = len - 1, j = 0; i >= 0; i--, j++)
-
-    {
-
-        reversed[j] = alpha[i];
-
+// Function to reverse the array 🔄
+int *rev(int *alpha, int len) {
+    int *reversed = malloc(len * sizeof(int));  // Allocate memory for the reversed array
+    if (reversed == NULL) {
+        fprintf(stderr, "Memory allocation failed 💥\n");
+        return NULL;  // Return NULL if memory allocation fails
     }
 
-    return reversed;
-
-}
-
-
-
-//function that takes an array and its size and returns a new array with every second element of the first array
-int *every_second(int len, int *alpha)
-{
-
-    int *second_elements = malloc((len / 2) * sizeof(int));
-
-    for (int i = 1, j = 0; i < len; i += 2, j++)
-
-    {
-
-        second_elements[j] = alpha[i];
-
+    for (int i = len - 1, j = 0; i >= 0; i--, j++) {
+        reversed[j] = alpha[i];  // Reverse the array elements
     }
 
-    return second_elements;
-
+    return reversed;  // Return the reversed array
 }
 
-//function that takes an array and its size and returns a new array with only even numbers
+// Function to return an array with every second element of the input array ✌️
+int *every_second(int len, int *alpha) {
+    int *second_elements = malloc((len / 2 + len % 2) * sizeof(int));  // Allocate memory for the new array
+    if (second_elements == NULL) {
+        fprintf(stderr, "Memory allocation failed 💥\n");
+        return NULL;  // Return NULL if memory allocation fails
+    }
 
-int *even_numbers(int len, int *alpha)
+    for (int i = 1, j = 0; i < len; i += 2, j++) {
+        second_elements[j] = alpha[i];  // Copy every second element
+    }
 
-{
+    return second_elements;  // Return the new array
+}
 
-    int counter = 0;
+// Function to filter out even numbers from an array 🌟
+int *even_numbers(int len, int *alpha) {
+    int counter = 0;  // Count how many even numbers are there
 
-    int j = 0;
-
-
-    for (int i = 0; i < len; i++)
-
-    {
-
-        if (alpha[i] % 2 == 0)
-
-        {
-
+    // Count even numbers
+    for (int i = 0; i < len; i++) {
+        if (alpha[i] % 2 == 0) {
             counter++;
-
         }
-
     }
 
-    int new_len = counter;
-
-
-
-    int *even = malloc(new_len * sizeof(int));
-
-    for (int i = 0; i < len; i++)
-
-    {
-
-        if (alpha[i] % 2 == 0)
-
-        {
-
-            even[j] = alpha[i];
-
-            j++;
-
-        }
-
+    int *even = malloc(counter * sizeof(int));  // Allocate memory for even numbers
+    if (even == NULL) {
+        fprintf(stderr, "Memory allocation failed 💥\n");
+        return NULL;  // Return NULL if memory allocation fails
     }
 
+    for (int i = 0, j = 0; i < len; i++) {
+        if (alpha[i] % 2 == 0) {
+            even[j++] = alpha[i];  // Store even numbers
+        }
+    }
+
+    // Display the array with even numbers
     printf("Array with even numbers is: ");
-
-    for (int i = 0; i < new_len; i++)
-
-    {
-
+    for (int i = 0; i < counter; i++) {
         printf("%i ", even[i]);
-
     }
-
     printf("\n");
 
-    return 0;
+    return even;
 }
 
-//function that takes an array and its size, then split the array by half into 2 arrays,
+// Function to merge two halves of an array into a new array alternately 🔀
+int *new_array(int len, int *alpha) {
+    int new_len = ceil(len / 2.0);  // Determine the new length based on half of the original length
 
-// then create a new array and return it by merging the 2 arrays element by element
-
-int *new_array(int len, int *alpha)
-
-{
-
-    int new_len;
-
-    if (len % 2 == 0)
-
-    {
-
-        new_len = ceil(len / 2);
-
+    int *new_alpha = malloc(len * sizeof(int));  // Allocate memory for the new array
+    if (new_alpha == NULL) {
+        fprintf(stderr, "Memory allocation failed 💥\n");
+        return NULL;  // Return NULL if memory allocation fails
     }
 
-
-    if (len % 2 != 0)
-
-    {
-
-        new_len = ceil(len / 2) + 1;
-
-    }
-
-
-    int *new_alpha = malloc(len * sizeof(int));
-
-    int counter = 0;
-
-    for (int i = 0, j = i + new_len; i < new_len; i++, j++)
-
-    {
-
-        new_alpha[counter] = alpha[i];
-
-        counter++;
-
-        if (j < len)
-
-        {
-
-            new_alpha[counter] = alpha[j];
-
-            counter++;
-
+    int counter = 0;  // Counter for the new array index
+    // Merge two halves alternately
+    for (int i = 0, j = new_len; i < new_len; i++, counter++) {
+        new_alpha[counter] = alpha[i];  // First half element
+        if (j < len) {
+            new_alpha[++counter] = alpha[j++];  // Second half element
         }
-
     }
 
+    // Display the merged array
     printf("Merged arrays: ");
-
-    for (int i = 0; i < len; i++)
-
-    {
-
+    for (int i = 0; i < len; i++) {
         printf("%i ", new_alpha[i]);
-
     }
-
     printf("\n");
 
-    return 0;
-
+    return new_alpha;
 }
